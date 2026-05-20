@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이안선 | 전략적 빌더 & 브랜드 마케터</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" crossorigin />
+    <style>
+        /* ================= 글로벌 변수 및 초기화 ================= */
+        :root {
+            --bg-color: #050505;
+            --surface-color: #121212;
+            --surface-hover: #1e1e1e;
+            --border-color: #262626;
+            --text-main: #f5f5f5;
+            --text-muted: #a3a3a3;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ================= 상단 탭 내비게이션 ================= */
+        .tab-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            padding: 15px 20px;
+            gap: 20px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: var(--surface-hover);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: var(--accent-blue);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInTab 0.5s ease-out forwards;
+            padding-top: 80px; /* 네비게이션 바 높이 확보 */
+            min-height: 100vh;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 공통 애니메이션 클래스 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================= 1. 프로필 스타일 ================= */
+        .profile-section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 70vh;
+            gap: 40px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff, #a3a3a3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+        }
+
+        .breathing-image {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            animation: rainbowBreathe 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes rainbowBreathe {
+            0% { transform: scale(0.95); box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.3); }
+            100% { transform: scale(1.05); box-shadow: 0 0 30px rgba(59, 130, 246, 0.7), 0 0 60px rgba(139, 92, 246, 0.5); }
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .bento-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .card-a { grid-column: span 8; }
+        .card-b { grid-column: span 4; }
+        .card-c { grid-column: span 12; }
+
+        @media (max-width: 768px) {
+            .card-a, .card-b, .card-c { grid-column: span 12; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+
+        .bento-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: #fff; }
+        .bento-card p { color: var(--text-muted); font-size: 1rem; }
+
+        .horizontal-scroll-container {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            margin-top: 20px;
+        }
+        .horizontal-scroll-container::-webkit-scrollbar { display: none; }
+
+        .case-study {
+            flex: 0 0 85%;
+            scroll-snap-align: center;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+        }
+
+        /* ================= 2. 이력서 스타일 (다크 테마 적용) ================= */
+        .resume-wrapper {
+            padding: 40px 20px 100px;
+        }
+        .resume-container {
+            background-color: var(--surface-color);
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            padding: 60px;
+        }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 30px;
+            margin-bottom: 35px;
+        }
+
+        .profile-photo {
+            width: 120px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: #1a1a1a;
+        }
+
+        .header-info { flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-start; }
+        .info-left h1 { font-size: 34px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px; }
+        .info-left .title { font-size: 18px; font-weight: 500; color: var(--text-muted); }
+        .contact-info { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-size: 13px; color: var(--text-muted); text-align: right; }
+        .contact-info span strong { color: var(--text-main); }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+
+        .about-text { font-size: 15px; color: var(--text-muted); text-align: justify; }
+
+        .skills-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .skill-badge {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: var(--accent-purple);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .entry-item { margin-bottom: 24px; }
+        .entry-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+        .entry-title { font-size: 16px; font-weight: 700; color: var(--text-main); }
+        .entry-subtitle { font-size: 14px; font-weight: 500; color: var(--accent-purple); margin-bottom: 8px; }
+        .entry-dates { font-size: 13px; color: var(--text-muted); }
+        .entry-description { font-size: 14px; color: var(--text-muted); text-align: justify; }
+
+        .awards-list { display: flex; flex-direction: column; gap: 12px; }
+        .award-row { display: flex; justify-content: space-between; font-size: 14.5px; }
+        .award-name { font-weight: 600; color: var(--text-main); }
+        .award-date { color: var(--text-muted); font-size: 14px; }
+
+        @media (max-width: 768px) {
+            .resume-container { padding: 30px 20px; }
+            .main-header { flex-direction: column; align-items: flex-start; }
+            .header-info { flex-direction: column; gap: 15px; }
+            .contact-info { align-items: flex-start; text-align: left; }
+            .entry-header { flex-direction: column; gap: 4px; }
+        }
+
+        /* ================= 3. 갤러리 스타일 (다크 테마 적용) ================= */
+        .gallery-wrapper {
+            padding: 40px 20px 100px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .gallery-header {
+            margin-bottom: 30px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .gallery-header h1 { font-size: 1.8rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+        .gallery-header p { font-size: 1rem; color: var(--text-muted); }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .media-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .media-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .thumbnail {
+            height: 180px;
+            background-color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .thumbnail img, .thumbnail video { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s; }
+        .media-card:hover .thumbnail img, .media-card:hover .thumbnail video { opacity: 1; }
+        .thumbnail .icon { font-size: 3.5rem; color: #5f6368; }
+
+        .info { padding: 16px; display: flex; align-items: center; gap: 12px; }
+        .format-icon {
+            width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+            border-radius: 6px; font-size: 0.75rem; font-weight: bold; color: #fff;
+        }
+        .format-icon.image { background-color: #ea4335; }
+        .format-icon.video { background-color: #e91e63; }
+        .format-icon.pdf { background-color: #db4437; }
+        .format-icon.slide { background-color: #fbbc04; }
+
+        .details { flex-grow: 1; overflow: hidden; }
+        .details .name { font-size: 1rem; font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+        .details .meta { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* 팝업 모달창 */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-header {
+            position: absolute; top: 0; left: 0; right: 0; padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); color: #fff;
+        }
+        .modal-title { font-size: 1.2rem; font-weight: 500; }
+        .close-btn { background: none; border: none; color: #fff; font-size: 2.5rem; cursor: pointer; line-height: 1; transition: color 0.2s; }
+        .close-btn:hover { color: var(--accent-purple); }
+        .modal-content { max-width: 90vw; max-height: 85vh; display: flex; justify-content: center; align-items: center; }
+        .modal-content img, .modal-content video { max-width: 100%; max-height: 85vh; border-radius: 8px; }
+        .modal-content iframe { width: 85vw; height: 85vh; border: none; border-radius: 8px; background-color: #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- 탭 네비게이션 -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('tab-profile', this)">홈 / 프로필</button>
+        <button class="tab-btn" onclick="switchTab('tab-resume', this)">상세 이력서</button>
+        <button class="tab-btn" onclick="switchTab('tab-portfolio', this)">미디어 갤러리</button>
+    </nav>
+
+    <!-- ================= 탭 1: 프로필 ================= -->
+    <div id="tab-profile" class="tab-content active">
+        <section class="profile-section hero">
+            <img src="다운로드.png" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500'" alt="Profile Aura" class="breathing-image">
+            <h1>숫자로 증명하고,<br>심리로 설득하며, 기술로 구조화합니다.</h1>
+            <p>비즈니스 성과와 브랜드 심리학, 그리고 AI 자동화를 연결하는 전략적 빌더, 이안선입니다.</p>
+        </section>
+
+        <section class="profile-section fade-in">
+            <h2 style="margin-bottom: 30px; font-size: 2rem;">Core Competencies</h2>
+            <div class="bento-grid">
+                <div class="bento-card card-a">
+                    <h3>Performance & Sales</h3>
+                    <p>데이터 기반의 목표 달성 및 주요 비즈니스 세일즈 퍼포먼스를 최적화합니다. 쿼터별 목표 달성률을 시각적으로 모니터링하고 그로스 해킹 전략을 도입합니다.</p>
+                </div>
+                <div class="bento-card card-b">
+                    <h3>Brand Psychology</h3>
+                    <p>소비자 행동 과학(Consumer Neuroscience)을 접목하여 브랜드 마케팅 전략을 기획합니다. 심리를 관통하는 카피와 디자인을 설계합니다.</p>
+                </div>
+                <div class="bento-card card-c">
+                    <h3>AI & Automation Architecture</h3>
+                    <p>생산성을 극대화하기 위해 직접 설계한 AI 프롬프트 아키텍처와 워크플로우 자동화 툴킷. (Zapier, Make, ChatGPT API 활용)</p>
+                    <div style="margin-top: 20px; background: #000; padding: 15px; border-radius: 8px; font-family: monospace; color: var(--accent-purple);">
+                        &gt; System.init(Automation);<br>
+                        &gt; Loading workflow protocols... Done.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-section fade-in">
+            <h2 style="margin-bottom: 20px; font-size: 2rem;">Logical Case Studies</h2>
+            <div class="horizontal-scroll-container">
+                <div class="case-study">
+                    <span class="tag">Context</span>
+                    <h3>시장 경쟁 상황 및 배경 분석</h3>
+                    <p style="color: var(--text-muted); margin-top: 10px;">신규 서비스 론칭 시 기존 경쟁사 대비 인지도 부족 및 리드 확보의 한계점이 존재했습니다.</p>
+                </div>
+                <div class="case-study">
+                    <span class="tag" style="background: rgba(139, 92, 246, 0.1); color: var(--accent-purple);">Action</span>
+                    <h3>구조적 프롬프팅 및 마케팅 전략</h3>
+                    <p style="color: var(--text-muted); margin-top: 10px;">AI를 활용한 콘텐츠 대량 생성 파이프라인 구축 및 소비자 심리를 타겟팅한 A/B 테스트를 진행했습니다.</p>
+                </div>
+                <div class="case-study">
+                    <span class="tag" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">Result</span>
+                    <h3>리스크 관리 및 최종 성과</h3>
+                    <p style="color: var(--text-muted); margin-top: 10px;">CAC(고객획득비용) 40% 절감 및 분기별 매출 목표 150% 달성에 성공했습니다.</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 60px; padding-bottom: 40px;">
+                <button onclick="switchTab('tab-resume', document.querySelectorAll('.tab-btn')[1])" style="padding: 16px 40px; background: #fff; color: #000; border-radius: 30px; font-weight: 700; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.3s;">상세 이력서 보기</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= 탭 2: 이력서 ================= -->
+    <div id="tab-resume" class="tab-content">
+        <div class="resume-wrapper fade-in">
+            <div class="resume-container">
+                <header class="main-header">
+                    <div class="profile-zone">
+                        <img src="me.jpeg" onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200'" alt="프로필 사진" class="profile-photo">
+                    </div>
+                    <div class="header-info">
+                        <div class="info-left">
+                            <h1>이안선</h1>
+                            <div class="title">브랜드 마케터 / 전략적 빌더</div>
+                        </div>
+                        <div class="contact-info">
+                            <span><strong>Phone |</strong> 010-2531-5459</span>
+                            <span><strong>Email |</strong> sunniesummer28@gmail.com</span>
+                            <span><strong>Location |</strong> 서울특별시 강남구</span>
+                            <span><strong>Portfolio |</strong> www.anseon.design</span>
+                        </div>
+                    </div>
+                </header>
+
+                <section>
+                    <h2 class="section-title">소개</h2>
+                    <p class="about-text">
+                        10년 이상 비즈니스의 핵심 가치를 감각적인 시각 솔루션으로 전환해 온 브랜드 전문가입니다. 철저한 시장 분석과 전략적 사고를 바탕으로 정교한 비주얼 아이덴티티를 구축하는 데 강점이 있습니다. 대기업부터 빠르게 성장하는 스타트업까지 다양한 규모의 프로젝트를 총괄하며 탁월한 리더십과 협업 역량을 증명해 왔습니다. 단순한 미적 성취를 넘어 비즈니스의 실질적 성과와 확장을 견인하는 작동 가능한 디자인을 지향합니다.
+                    </p>
+                </section>
+
+                <section>
+                    <h2 class="section-title">핵심 역량</h2>
+                    <div class="skills-container">
+                        <span class="skill-badge">브랜드 전략 수립</span>
+                        <span class="skill-badge">비주얼 ID 구축</span>
+                        <span class="skill-badge">디자인 시스템 개발</span>
+                        <span class="skill-badge">크리에이티브 팀 리딩</span>
+                        <span class="skill-badge">AI 파이프라인 구축</span>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="section-title">경력 사항</h2>
+                    <div class="entry-item">
+                        <div class="entry-header">
+                            <span class="entry-title">크리에이티브 디렉터</span>
+                            <span class="entry-dates">2020. 03 - 현재</span>
+                        </div>
+                        <div class="entry-subtitle">(주)디자인랩코리아</div>
+                        <p class="entry-description">
+                            글로벌 디자인 에이전시에서 대규모 리브랜딩 프로젝트를 총괄하여 고객사의 브랜드 가치를 전년 대비 150% 이상 상승시키는 성과를 달성했습니다. 전사 통합 디자인 시스템 고도화를 주도하여 디자인 생산성을 40% 개선했으며, 다각도 브랜드 캠페인을 리딩하여 신규 고객 유입률 증대에 기여했습니다.
+                        </p>
+                    </div>
+
+                    <div class="entry-item">
+                        <div class="entry-header">
+                            <span class="entry-title">시니어 브랜드 디자이너</span>
+                            <span class="entry-dates">2017. 02 - 2020. 02</span>
+                        </div>
+                        <div class="entry-subtitle">스타트업 블록체인 파트너스</div>
+                        <p class="entry-description">
+                            초기 스타트업의 신규 서비스 BI 및 비주얼 아이덴티티 가이드라인을 구축하여 고유한 브랜드 경험을 성공적으로 정착시켰습니다. 온·오프라인을 아우르는 일관된 브랜드 경험 디자인 체계를 정립하여 고유한 브랜드 이미지를 안착시켰고, 신규 브랜드 캠페인 집행을 통해 타겟 고객 전환율 65% 증가에 기여했습니다.
+                        </p>
+                    </div>
+
+                    <div class="entry-item">
+                        <div class="entry-header">
+                            <span class="entry-title">브랜드 디자이너</span>
+                            <span class="entry-dates">2014. 03 - 2017. 01</span>
+                        </div>
+                        <div class="entry-subtitle">스튜디오 아임</div>
+                        <p class="entry-description">
+                            다양한 클라이언트의 브랜드 패키지 디자인 및 오프라인 팝업스토어 공간 브랜딩 프로젝트를 수행했습니다. 총 12개의 프로젝트를 성공적으로 완수하며 트렌디한 감각과 비즈니스의 균형을 맞춘 시각 결과물로 클라이언트 만족도 98%를 기록했습니다.
+                        </p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="section-title">학력 사항</h2>
+                    <div class="entry-item">
+                        <div class="entry-header">
+                            <span class="entry-title">홍익대학교 대학원</span>
+                            <span class="entry-dates">2012. 03 - 2014. 02</span>
+                        </div>
+                        <div class="entry-subtitle">디자인학과 석사 (브랜드 아이덴티티 및 디자인 경영 전공)</div>
+                    </div>
+                    <div class="entry-item">
+                        <div class="entry-header">
+                            <span class="entry-title">이화여자대학교</span>
+                            <span class="entry-dates">2008. 03 - 2012. 02</span>
+                        </div>
+                        <div class="entry-subtitle">시각디자인학과 학사 (시각 및 타이포그래피 전공, 최우수 졸업작품 선정)</div>
+                    </div>
+                    <div class="entry-item">
+                        <div class="entry-header">
+                            <span class="entry-title">글로벌 디자인 멘토링 프로그램</span>
+                            <span class="entry-dates">2007. 05 - 2008. 12</span>
+                        </div>
+                        <div class="entry-subtitle">디자인 마스터 코스 수료</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="section-title">수상 및 성과</h2>
+                    <div class="awards-list">
+                        <div class="award-row">
+                            <span class="award-name">브랜드 디자인 우수상 - 대한민국 디자인전</span>
+                            <span class="award-date">2023</span>
+                        </div>
+                        <div class="award-row">
+                            <span class="award-name">BI 리뉴얼 프로젝트 대상 - 국내 브랜딩 어워드</span>
+                            <span class="award-date">2022</span>
+                        </div>
+                        <div class="award-row">
+                            <span class="award-name">크리에이티브 리더십상 - 디자인 포럼 코리아</span>
+                            <span class="award-date">2021</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 탭 3: 미디어 갤러리 ================= -->
+    <div id="tab-portfolio" class="tab-content">
+        <div class="gallery-wrapper fade-in">
+            <div class="gallery-header">
+                <h1>Media Workspace</h1>
+                <p id="summary">총 0개의 아카이브 항목</p>
+            </div>
+
+            <div class="grid-container" id="gridContainer">
+                <!-- 자바스크립트로 렌더링 됨 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 갤러리 팝업 뷰어 모달 -->
+    <div class="modal" id="mediaModal">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">파일명</div>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-content" id="modalContent">
+            <!-- 뷰어 내용 생성 위치 -->
+        </div>
+    </div>
+
+    <!-- ================= 스크립트 ================= -->
+    <script>
+        // --- 탭 전환 로직 ---
+        function switchTab(tabId, btnElement) {
+            // 모든 탭 컨텐츠 숨기기
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // 모든 버튼 비활성화
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 선택한 탭 보이기 & 버튼 활성화
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+            
+            // 스크롤 맨 위로
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- 스크롤 페이드인 옵저버 ---
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach((element) => {
+            observer.observe(element);
+        });
+
+        // --- 갤러리 렌더링 로직 ---
+        const mediaFiles = [
+            { name: "메인_프로필_사진", format: "jpg", size: "2.1 MB", type: "image", src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=500" },
+            { name: "2026_소개_영상", format: "mp4", size: "24.5 MB", type: "video", src: "media/intro.mp4" },
+            { name: "상반기_실적_보고서", format: "pdf", size: "1.8 MB", type: "pdf", src: "media/report.pdf" },
+            { name: "프로젝트_발표_자료", format: "html", size: "4.2 MB", type: "slide", src: "media/presentation.html" }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const summary = document.getElementById('summary');
+            summary.textContent = `총 ${mediaFiles.length}개의 프로젝트 아카이브`;
+            renderGrid();
+        });
+
+        function renderGrid() {
+            const container = document.getElementById('gridContainer');
+            mediaFiles.forEach(file => {
+                const card = document.createElement('div');
+                card.className = 'media-card';
+                card.onclick = () => openModal(file);
+
+                let thumbContent = '';
+                if (file.type === 'image') {
+                    thumbContent = `<img src="${file.src}" alt="${file.name}">`;
+                } else if (file.type === 'video') {
+                    thumbContent = `<div class="icon">▶</div>`; // 비디오 썸네일 대신 아이콘
+                } else {
+                    const iconMap = { pdf: '📄', slide: '📊' };
+                    thumbContent = `<div class="icon">${iconMap[file.type]}</div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="thumbnail">${thumbContent}</div>
+                    <div class="info">
+                        <div class="format-icon ${file.type}">${file.format.toUpperCase().substring(0, 3)}</div>
+                        <div class="details">
+                            <div class="name" title="${file.name}.${file.format}">${file.name}.${file.format}</div>
+                            <div class="meta">${file.size}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openModal(file) {
+            const modal = document.getElementById('mediaModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+
+            title.textContent = `${file.name}.${file.format}`;
+            content.innerHTML = ''; 
+
+            if (file.type === 'image') {
+                content.innerHTML = `<img src="${file.src}" alt="${file.name}">`;
+            } else if (file.type === 'video') {
+                content.innerHTML = `<video src="${file.src}" controls autoplay style="width: 100%; max-height: 80vh;"></video>`;
+            } else {
+                content.innerHTML = `<iframe src="${file.src}"></iframe>`;
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('mediaModal');
+            document.getElementById('modalContent').innerHTML = ''; 
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('mediaModal');
+            if (event.target === modal) { closeModal(); }
+        }
+    </script>
+</body>
+</html>
