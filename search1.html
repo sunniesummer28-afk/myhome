@@ -1,0 +1,409 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>TeamPlace 검색 결과</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts for better typography -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f6faff",
+                        "secondary-fixed": "#d9e4f1",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-error": "#ffffff",
+                        "surface-container": "#eaeef3",
+                        "on-tertiary-container": "#ffcfbe",
+                        "surface-container-highest": "#dfe3e8",
+                        "surface": "#f6faff",
+                        "on-background": "#171c20",
+                        "on-surface": "#171c20",
+                        "surface-container-low": "#f0f4f9",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#d6e1ef",
+                        "surface-tint": "#0856cf",
+                        "primary-fixed": "#dae2ff",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#121d26",
+                        "secondary-fixed-dim": "#bdc8d5",
+                        "outline": "#737785",
+                        "inverse-on-surface": "#edf1f6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7f2b00",
+                        "on-tertiary-fixed": "#370e00",
+                        "background": "#f6faff",
+                        "surface-container-high": "#e4e9ed",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb599",
+                        "on-secondary-fixed-variant": "#3d4853",
+                        "surface-variant": "#dfe3e8",
+                        "surface-dim": "#d6dadf",
+                        "on-primary-container": "#ced9ff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#a83b00",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "tertiary-fixed": "#ffdbce",
+                        "on-secondary-container": "#59646f",
+                        "secondary": "#555f6b",
+                        "primary": "#0041a2",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2c3135",
+                        "on-surface-variant": "#424654",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#802b00",
+                        "outline-variant": "#c3c6d6",
+                        "primary-container": "#0b57d0",
+                        "inverse-primary": "#b2c5ff",
+                        "on-primary-fixed": "#001847"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "label-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        :root {
+            --bg-color: #f0f4f9;
+            --text-primary: #171c20;
+            --text-secondary: #424654;
+            --card-bg: #ffffff;
+            --hover-color: #dae2ff;
+            --accent-color: #0b57d0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Nav Bar Styles from SCREEN_6 */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid #dfe3e8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 1001;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .top-nav .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .top-nav .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .top-nav .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .top-nav .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        /* Floating Menu from SCREEN_6 */
+        .floating-menu {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .drag-handle {
+            width: 100%;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            margin-bottom: 5px;
+            opacity: 0.6;
+        }
+
+        .drag-handle::after {
+            content: "";
+            width: 36px;
+            height: 5px;
+            background-color: #c7c7c7;
+            border-radius: 3px;
+        }
+
+        .floating-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            border-radius: 16px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .floating-menu a:hover {
+            background-color: var(--hover-color);
+            color: var(--accent-color);
+            transform: translateX(3px); 
+        }
+
+        /* Card styles updated to match SCREEN_6 visual language */
+        .venue-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .venue-card:hover {
+            border-color: var(--hover-color);
+            box-shadow: 0 6px 16px rgba(0, 65, 162, 0.1);
+            transform: translateY(-4px);
+        }
+
+        /* Search Bar styled like SCREEN_6 */
+        .search-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--card-bg);
+            border-radius: 30px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+            margin: 0 auto;
+        }
+
+        .search-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 10px;
+            background: transparent;
+        }
+
+        .search-btn {
+            background-color: #f0f4f9;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+    </style>
+<style> :root { --bg-color: #f0f4f9; --text-primary: #171c20; --text-secondary: #424654; --card-bg: #ffffff; --hover-color: #dae2ff; --accent-color: #0b57d0; } body { background-color: var(--bg-color); color: var(--text-primary); font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100vh; display: flex; flex-direction: column; } .top-nav { position: fixed; top: 0; left: 0; right: 0; height: 56px; background-color: var(--card-bg); border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 1001; box-shadow: 0 1px 2px rgba(0,0,0,0.03); } .top-nav .logo { font-size: 20px; font-weight: 700; color: var(--accent-color); text-decoration: none; } .top-nav .nav-links { display: flex; gap: 28px; align-items: center; } .top-nav .nav-links a { text-decoration: none; color: var(--text-secondary); font-weight: 500; font-size: 14px; transition: color 0.2s; } .top-nav .nav-links a:hover { color: var(--accent-color); } .floating-menu { position: fixed; left: 20px; top: 50%; transform: translateY(-50%); background-color: var(--card-bg); padding: 15px; border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 1000; display: flex; flex-direction: column; gap: 8px; user-select: none; } .drag-handle { width: 100%; height: 24px; display: flex; justify-content: center; align-items: center; cursor: grab; margin-bottom: 5px; opacity: 0.6; } .drag-handle::after { content: ""; width: 36px; height: 5px; background-color: #c7c7c7; border-radius: 3px; } .floating-menu a { display: flex; align-items: center; padding: 12px 16px; text-decoration: none; color: var(--text-primary); font-weight: 500; border-radius: 16px; transition: all 0.2s ease; white-space: nowrap; } .floating-menu a:hover { background-color: var(--hover-color); color: var(--accent-color); transform: translateX(3px); } .venue-card { background-color: var(--card-bg); border-radius: 20px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid transparent; transition: all 0.2s; cursor: pointer; } .venue-card:hover { border-color: var(--hover-color); box-shadow: 0 6px 16px rgba(0, 65, 162, 0.1); transform: translateY(-4px); } .search-container { width: 100%; max-width: 900px; background-color: var(--card-bg); border-radius: 30px; padding: 12px 24px; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; margin: 0 auto; } .search-container input { flex: 1; border: none; outline: none; font-size: 16px; padding: 10px; background: transparent; } .search-btn { background-color: #f0f4f9; border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s; } </style></head>
+<body class="min-h-screen flex flex-col pt-14">
+<!-- Top Navigation Bar (from SCREEN_6) -->
+<nav class="top-nav"><a class="logo" href="#home">TeamPlace</a><div class="nav-links"><a href="#home" class="">홈</a><a href="#ai" class="">ai검색</a><a href="#manage" class="">예약관리</a><a href="#history" class="">이용내역</a><a href="#company" class="">회사관리</a><div class="flex items-center gap-6 ml-4 pl-6 border-l border-gray-100"><a class="text-[14px] font-500 text-[#424654] hover:text-[#0b57d0] transition-colors" href="#login">로그인</a><a class="bg-[#0b57d0] text-white px-4 py-1.5 rounded-full text-[14px] font-500 hover:bg-blue-800 transition-colors shadow-sm" href="#signup">회원가입</a></div></div></nav>
+<!-- Draggable Floating Menu (from SCREEN_6) -->
+<nav class="floating-menu" id="floatingMenu">
+<div aria-label="메뉴 이동하기" class="drag-handle" id="dragHandle"></div>
+<a href="#home" class="">홈</a>
+<a href="#ai" class="">ai검색</a>
+<a href="#manage" class="">예약관리</a>
+<a href="#history" class="">이용내역</a>
+<a href="#company" class="">회사관리</a>
+<a class="flex items-center px-4 py-3 text-[#171c20] font-500 rounded-[16px] hover:bg-[#dae2ff] hover:text-[#0b57d0] transition-all duration-200" href="#login">로그인</a>
+<a class="flex items-center px-4 py-3 text-[#171c20] font-500 rounded-[16px] hover:bg-[#dae2ff] hover:text-[#0b57d0] transition-all duration-200" href="#signup">회원가입</a></nav>
+<!-- Main Content -->
+<main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full md:pl-56 transition-all duration-300">
+<!-- Hero / Title Section -->
+<div class="mb-10">
+<h2 class="text-3xl font-bold text-gray-900 mb-2">팀 회식 및 비즈니스 미팅 장소</h2>
+<p class="text-gray-500 text-lg">서울 도심에서 즐기는 고품격 다이닝, 최고의 프라이빗 룸과 최고의 서비스를 제안합니다.</p>
+</div>
+<!-- Venue Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+<!-- Venue Card 1 -->
+<div class="venue-card" data-purpose="venue-card">
+<div class="relative h-56 overflow-hidden">
+<img alt="Japanese Dining" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3RgNon7YyOlF51w_tW6GEaOMycMAQrcdxX0f4KiAo1xiyr_A73d5R9ljuBW4OmuxUGqGmP8zXM7WA6smdgXRcX6RloJ0fqLk1iEdGhubDmZBAljAkrGAjrN7o3eqosw5-D9qIzB-LXxcKfL4BDMbYZ5ujimV7poGx5fqz9t9kjlprl_DVeFn3IieXuJj4YXaM_dQIY7w44r1k9zONjX-x78QGPG-DozQnctDhsy4otpdB-EJbKfnZOJsQBU_FqUQ7_qkZwhKPkGg">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-gray-900 truncate">하나미 일식 전문점</h3>
+<div class="flex items-center text-[#0b57d0]">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+<span class="ml-1 text-sm font-bold">4.9</span>
+</div>
+</div>
+<p class="text-gray-500 text-sm mb-4">35,000원부터~</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">#프라이빗룸</span>
+<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">#정통일식</span>
+</div>
+</div>
+</div>
+<!-- Venue Card 2 -->
+<div class="venue-card" data-purpose="venue-card">
+<div class="relative h-56 overflow-hidden">
+<img alt="Modern Sushi" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbGWTwT7aeEOYxv_6PKt8amEXo5Fnan5deeffZAeWqCeGGrLE0dh4ax30aZok0ge00WFm3U_KH6bYn861BP35pYD1fRw6dDDJ2UgFAD8yrIjIsFy6NzmGSR_stb5E-nQImHwSo7Tfo7s0AmbUYwMsc5Uxjox6OgAUzp8F3rQPt2NbAzxNgVbUmfHQjynbuwY3T6-VlDTWKId8X1VO2dSTlL4cpNNWSImlx_Dg4_17R4x7zgekxdICU_nt0NsYMGCZHSHpomuBV4SE">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-gray-900 truncate">미라이 스시 오마카세</h3>
+<div class="flex items-center text-[#0b57d0]">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+<span class="ml-1 text-sm font-bold">4.8</span>
+</div>
+</div>
+<p class="text-gray-500 text-sm mb-4">55,000원부터~</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">#셰프오마카세</span>
+<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">#비즈니스미팅</span>
+</div>
+</div>
+</div>
+<!-- Venue Card 3 -->
+<div class="venue-card" data-purpose="venue-card">
+<div class="relative h-56 overflow-hidden">
+<img alt="Dining Hall" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi4oGhrUOp5Dli4nv2CFe6uh7-Z5b_32i53SexmeQCGWlpVRViGWBGGSaANsu_5dNhqw2_wWAKlnsq_5But30DLVGVMzre-kOKneenQQlVAd00LZO9U7RlVBEBIDx7KQuQuM4NJ1dYiyKSNTHAeXis0ZsOY4yRaBumoO_ziuY_9u2695nDUHTAgNAyr54NZFyX4i3-I56PAuuHMp_rnI2BR4_QLn0dtatzIBHmeI0aHgjx_hKk7g_3mTNZicxSgBakAetbytlVXC0">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-gray-900 truncate">그랜드 다이닝 라운지</h3>
+<div class="flex items-center text-[#0b57d0]">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+<span class="ml-1 text-sm font-bold">4.7</span>
+</div>
+</div>
+<p class="text-gray-500 text-sm mb-4">40,000원부터~</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">#대형회식</span>
+<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">#럭셔리인테리어</span>
+</div>
+</div>
+</div>
+<!-- Add Filter Card -->
+<div class="bg-blue-50 border-2 border-dashed border-blue-200 rounded-[20px] flex flex-col items-center justify-center p-8 transition-all hover:scale-[1.02] cursor-pointer group" data-purpose="add-filter-card">
+<div class="w-12 h-12 bg-[#0b57d0] rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-800 transition-colors">
+<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<p class="text-[#0b57d0] font-semibold text-center">필터를 추가해서<br>더 정확한 검색을 해보세요</p>
+</div>
+</div>
+<!-- Search Bar Section (styled like SCREEN_6) -->
+<div class="search-container">
+<input placeholder="AI에게 물어보세요 (예: 강남역 근처 20명 회식 장소 찾아줘)" type="text">
+<button aria-label="검색" class="search-btn">
+<span class="" style="color: var(--accent-color)">➤</span>
+</button>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-gray-50 py-10 border-t border-gray-100">
+<div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+<p class="">© 2024 TeamPlace. All rights reserved.</p>
+<div class="flex space-x-6 mt-4 md:mt-0">
+<a class="hover:text-gray-900" href="#">Privacy Policy</a>
+<a class="hover:text-gray-900" href="#">Terms of Service</a>
+<a class="hover:text-gray-900" href="#">Cookie Settings</a>
+<a class="hover:text-gray-900" href="#">Contact Us</a>
+</div>
+</div>
+</footer>
+<script>
+        // Drag-and-drop JavaScript logic from SCREEN_6
+        const menu = document.getElementById('floatingMenu');
+        const handle = document.getElementById('dragHandle');
+
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        const startDrag = (e) => {
+            isDragging = true;
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            startX = clientX;
+            startY = clientY;
+            const rect = menu.getBoundingClientRect();
+            menu.style.transform = 'none';
+            menu.style.left = rect.left + 'px';
+            menu.style.top = rect.top + 'px';
+            menu.style.margin = '0';
+            initialLeft = rect.left;
+            initialTop = rect.top;
+        };
+
+        const drag = (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+            menu.style.left = `${initialLeft + dx}px`;
+            menu.style.top = `${initialTop + dy}px`;
+        };
+
+        const endDrag = () => {
+            isDragging = false;
+        };
+
+        handle.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', endDrag);
+        handle.addEventListener('touchstart', startDrag, { passive: false });
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('touchend', endDrag);
+    </script>
+
+
+
+
+</body></html>
